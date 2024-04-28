@@ -1,0 +1,690 @@
+\documentclass[11pt]{article}\usepackage[]{graphicx}\usepackage[]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0, 0, 0}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.502,0,0.502}{\textbf{#1}}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.651,0.522,0}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{1,0.502,0}{#1}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{1,0,0.502}{\textbf{#1}}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.733,0.475,0.467}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.502,0.502,0.753}{\textbf{#1}}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0,0.502,0.753}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0,0.267,0.4}{#1}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+
+\usepackage{geometry}
+\geometry{a4paper,hmargin=17.0mm,vmargin={26.0mm,21.0mm},footskip=10mm}
+\usepackage{hyperref}
+%% \usepackage{language}
+%\usepackage{natbib}
+\usepackage{alltt}
+\usepackage{fancyhdr}
+\fancyhf{}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\cov}{cov}
+\DeclareMathOperator{\cor}{cor}
+
+% coloring and subsectioning
+\definecolor{mycol}{rgb}{0.5, 0.3,0.3}
+\definecolor{mycolb}{rgb}{0.7, 0.3,0.3}
+\definecolor{mycolr}{rgb}{0.1, 0.1,1.0}
+\newcommand{\structure}[1]{{\color{mycolb}#1}}
+%\newcommand{\rcode}[1]{{\tt\color{red}#1}}
+\newcommand{\rcode}[1]{{\tt\color{red}#1}}
+\newcommand{\phead}[1]{{\bf{\color{mycol}#1}}}
+
+%% Now begin customising things. See the fancyhdr docs for more info.
+
+\chead{}
+\lhead[\sf \thepage]{\sf \leftmark}
+\rhead[\sf \leftmark]{\sf \thepage}
+\lfoot{}
+\cfoot{STAT2402: Analysis of Observations}
+\rfoot{\copyright~R. Nazim Khan~\the\year}
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+
+\ifdefined\knitrout
+\renewenvironment{knitrout}{%
+  \begin{small}%
+  \setlength{\topsep}{3.0pt plus 1.0pt minus 1.0pt}%
+  \setlength{\partopsep}{1.0pt plus 1.0pt minus 1.0pt}%
+  \setlength{\parskip}{0pt}}{\end{small}}
+\else
+  \fi
+
+\usepackage{xspace}
+\def\R{\textsf{R}\xspace}
+
+\title{STAT2402: Analysis of Observations\\
+  Notes on Lecture~2}
+
+\author{R.Nazim~Khan\thanks{School of Mathematics and Statistics (M019), The
+  University of Western Australia, 35 Stirling Highway, Crawley WA
+  6009, Australia. E-mail: \href{mailto:nazim.khan@uwa.edu.au}
+  {\texttt{nazim.khan@uwa.edu.au}}}} 
+
+\date{2 August, 2022}
+\renewcommand{\abstractname}{Summary}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt minus 3pt}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+This document contains some notes on the data analysis in Lecture 2.
+When reading the data into \R, I assume that the
+relevant files are stored in a subdirectory, called \texttt{data},
+of the working directory.  You may have to modify the commands
+with which the data is read in, but all other commands should work
+as shown, and they should produce the output shown.
+\end{abstract}
+
+
+%\tableofcontents
+
+
+  
+\phead{Exercise 1: Analysis of MultipleReg data}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{## Set directory to data source}
+\hlkwd{setwd}\hlstd{(}\hlstr{"C:/Users/rnazi/Documents/Teaching/STAT2402/STAT2402-2023/RMaterial"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\phead{Building a Linear model}
+In this exercise we will build a linear model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{mult} \hlkwb{<-} \hlkwd{read.table}\hlstd{(}\hlstr{"../Data/mult.txt"}\hlstd{,} \hlkwc{header} \hlstd{= T,} \hlkwc{sep} \hlstd{=} \hlstr{"\textbackslash{}t"}\hlstd{)}
+\hlkwd{summary}\hlstd{(mult)}
+\end{alltt}
+\begin{verbatim}
+##        x               y         
+##  Min.   : 1.00   Min.   : 13.95  
+##  1st Qu.:10.75   1st Qu.: 69.75  
+##  Median :20.50   Median :171.81  
+##  Mean   :20.50   Mean   :204.77  
+##  3rd Qu.:30.25   3rd Qu.:321.04  
+##  Max.   :40.00   Max.   :517.59
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+It is good to look at a summary of the data you read in, to make sure it has been read in correctly. Data contains two
+variables only. Let us look at a plot
+of the data.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{with}\hlstd{(mult,} \hlkwd{plot}\hlstd{(y} \hlopt{~} \hlstd{x,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Plot of model building data"}\hlstd{))}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-3-1} 
+
+}
+
+
+\end{knitrout}
+Plots indicates a slight curvature to the data. So how do we start the model building? Do we include an exponential term?
+Do we fit a model for $\log y$? Or shall we try a quadratic term? We start a simple linear model. Then by performing an
+analysis of residuals we select other terms and build up a model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{flm} \hlkwb{<-} \hlkwd{lm}\hlstd{(y} \hlopt{~} \hlstd{x,} \hlkwc{data} \hlstd{= mult)}
+\hlkwd{summary}\hlstd{(flm)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x, data = mult)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -32.973 -26.178  -8.142  21.016  61.307 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) -59.6331     9.7454  -6.119 3.91e-07 ***
+## x            12.8979     0.4142  31.137  < 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 30.24 on 38 degrees of freedom
+## Multiple R-squared:  0.9623,	Adjusted R-squared:  0.9613 
+## F-statistic: 969.5 on 1 and 38 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(flm}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{flm}\hlopt{$}\hlstd{fitted.values)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-4-1} 
+
+}
+
+
+\end{knitrout}
+The residual plot indicates a quadratic term, so we include this.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{flm1} \hlkwb{<-} \hlkwd{update}\hlstd{(flm, .} \hlopt{~} \hlstd{.} \hlopt{+} \hlkwd{I}\hlstd{(x}\hlopt{^}\hlnum{2}\hlstd{))}
+\hlkwd{summary}\hlstd{(flm1)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x + I(x^2), data = mult)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.45914 -0.07501 -0.00184  0.09164  0.16288 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 1.141e+01  6.114e-02   186.7   <2e-16 ***
+## x           2.748e+00  6.878e-03   399.6   <2e-16 ***
+## I(x^2)      2.475e-01  1.627e-04  1521.6   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.1225 on 37 degrees of freedom
+## Multiple R-squared:      1,	Adjusted R-squared:      1 
+## F-statistic: 3.07e+07 on 2 and 37 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(flm1}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{flm1}\hlopt{$}\hlstd{fitted.values)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-5-1} 
+
+}
+
+
+\end{knitrout}
+Already looking good, with very small residuals. There is still a pattern, which resembles a square root function, so we
+include this in the model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{flm2} \hlkwb{<-} \hlkwd{update}\hlstd{(flm1, .} \hlopt{~} \hlstd{.} \hlopt{+} \hlkwd{I}\hlstd{(}\hlkwd{sqrt}\hlstd{(x)))}
+\hlkwd{summary}\hlstd{(flm2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = y ~ x + I(x^2) + I(sqrt(x)), data = mult)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -3.642e-08 -6.333e-09  5.320e-10  6.594e-09  5.762e-08 
+## 
+## Coefficients:
+##              Estimate Std. Error   t value Pr(>|t|)    
+## (Intercept) 1.000e+01  4.163e-08 2.402e+08   <2e-16 ***
+## x           2.500e+00  7.176e-09 3.484e+08   <2e-16 ***
+## I(x^2)      2.500e-01  7.532e-11 3.319e+09   <2e-16 ***
+## I(sqrt(x))  1.200e+00  3.419e-08 3.510e+07   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2.123e-08 on 36 degrees of freedom
+## Multiple R-squared:      1,	Adjusted R-squared:      1 
+## F-statistic: 6.815e+20 on 3 and 36 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(flm2}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{flm2}\hlopt{$}\hlstd{fitted.values)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-6-1} 
+
+}
+
+
+\end{knitrout}
+Awesome! No patterns, {\it very} small residuals.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{AIC}\hlstd{(flm)}
+\end{alltt}
+\begin{verbatim}
+## [1] 390.201
+\end{verbatim}
+\begin{alltt}
+\hlkwd{AIC}\hlstd{(flm1)}
+\end{alltt}
+\begin{verbatim}
+## [1] -49.56664
+\end{verbatim}
+\begin{alltt}
+\hlkwd{AIC}\hlstd{(flm2)}
+\end{alltt}
+\begin{verbatim}
+## [1] -1294.127
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+The final model has lowest AIC and residual SE. Final model is
+$$\hat y = 10 + 2.5x + 0.25 x^@ + 1.2 \sqrt{x}.$$
+This is the exact model used to generate the data. We plot the original data and the predicted values from the model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{with}\hlstd{(mult,} \hlkwd{plot}\hlstd{(y} \hlopt{~} \hlstd{x,} \hlkwc{type} \hlstd{=} \hlstr{"l"}\hlstd{))}
+\hlkwd{lines}\hlstd{(}\hlkwd{predict.lm}\hlstd{(flm2)} \hlopt{~} \hlstd{mult}\hlopt{$}\hlstd{x,} \hlkwc{type} \hlstd{=} \hlstr{"p"}\hlstd{,} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-8-1} 
+
+}
+
+
+\end{knitrout}
+
+The fit is exact. So model building proceeds by fitting simple models first and then adding terms based on residual analysis.
+
+\phead{Analysis of cost of power data}
+We analyse the data \texttt{power.txt} to build a model for cost of power based on the usage. The data contains the
+cost of power and the usage in units. First read in the data and
+plot it.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{power} \hlkwb{<-} \hlkwd{read.table}\hlstd{(}\hlstr{"../Data/power.txt"}\hlstd{,} \hlkwc{header} \hlstd{= T,} \hlkwc{sep} \hlstd{=} \hlstr{"\textbackslash{}t"}\hlstd{)}
+\hlkwd{summary}\hlstd{(power)}
+\end{alltt}
+\begin{verbatim}
+##      Month            Cost           Units      
+##  Min.   : 1.00   Min.   :28157   Min.   :275.0  
+##  1st Qu.: 9.75   1st Qu.:39180   1st Qu.:497.2  
+##  Median :18.50   Median :43424   Median :623.0  
+##  Mean   :18.50   Mean   :41778   Mean   :593.7  
+##  3rd Qu.:27.25   3rd Qu.:45639   3rd Qu.:688.0  
+##  Max.   :36.00   Max.   :47332   Max.   :863.0
+\end{verbatim}
+\begin{alltt}
+\hlkwd{with}\hlstd{(power,} \hlkwd{plot}\hlstd{(Cost} \hlopt{~} \hlstd{Units))}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-9-1} 
+
+}
+
+
+\end{knitrout}
+The cost appears to increase with usage, but seems to flatten off as cost increases. We start by fitting a simple linear
+model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{plm} \hlkwb{<-} \hlkwd{lm}\hlstd{(Cost} \hlopt{~} \hlstd{Units,} \hlkwc{data} \hlstd{= power)}
+\hlkwd{summary}\hlstd{(plm)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Cost ~ Units, data = power)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4958.9 -2136.0   236.4  2261.4  4297.5 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 23651.489   1917.137  12.337 4.17e-14 ***
+## Units          30.533      3.137   9.734 2.32e-11 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2734 on 34 degrees of freedom
+## Multiple R-squared:  0.7359,	Adjusted R-squared:  0.7282 
+## F-statistic: 94.75 on 1 and 34 DF,  p-value: 2.317e-11
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+Some diagnostics now. First the plot of the fit.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{with}\hlstd{(power,} \hlkwd{plot}\hlstd{(Cost} \hlopt{~} \hlstd{Units,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{25000}\hlstd{,} \hlnum{50050}\hlstd{)))}
+\hlkwd{lines}\hlstd{(}\hlkwd{predict.lm}\hlstd{(plm)} \hlopt{~} \hlstd{power}\hlopt{$}\hlstd{Units,} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-11-1} 
+
+}
+
+
+\end{knitrout}
+Not a very good fit, especially at the ends. Examine the plot of residuals to see how to improve this model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(plm}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{plm}\hlopt{$}\hlstd{fitted.values)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-12-1} 
+
+}
+
+
+\end{knitrout}
+Nothing too clear here! But a closer look does indicate some curvature and a quadratic trend. Let us include a quadratic
+term in the model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{plm1} \hlkwb{<-} \hlkwd{lm}\hlstd{(Cost} \hlopt{~} \hlstd{Units} \hlopt{+} \hlkwd{I}\hlstd{(Units}\hlopt{^}\hlnum{2}\hlstd{),} \hlkwc{data} \hlstd{= power)}
+\hlkwd{summary}\hlstd{(plm1)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Cost ~ Units + I(Units^2), data = power)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5020.4 -1406.9   288.9  1456.9  3248.7 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 5792.79829 4763.05850   1.216 0.232539    
+## Units         98.35039   17.23690   5.706  2.3e-06 ***
+## I(Units^2)    -0.05997    0.01507  -3.981 0.000356 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2281 on 33 degrees of freedom
+## Multiple R-squared:  0.8216,	Adjusted R-squared:  0.8108 
+## F-statistic: 75.98 on 2 and 33 DF,  p-value: 4.453e-13
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(plm1}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{plm1}\hlopt{$}\hlstd{fitted.values)}
+\hlkwd{with}\hlstd{(power,} \hlkwd{plot}\hlstd{(Cost} \hlopt{~} \hlstd{Units,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{25000}\hlstd{,} \hlnum{50050}\hlstd{)))}
+\hlkwd{lines}\hlstd{(}\hlkwd{sort}\hlstd{(}\hlkwd{predict.lm}\hlstd{(plm1))} \hlopt{~} \hlkwd{sort}\hlstd{(power}\hlopt{$}\hlstd{Units),} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-13-1} 
+\includegraphics[width=.7\textwidth]{figures/unnamed-chunk-13-2} 
+
+}
+
+
+\end{knitrout}
+Fit looks much better. Problem with the model is that the coefficient of the square term is negative, so the Cost will
+decrease as Units increases. This is not reasonable. Let us try a log model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{plm2} \hlkwb{<-} \hlkwd{lm}\hlstd{(Cost} \hlopt{~} \hlkwd{I}\hlstd{(}\hlkwd{log}\hlstd{(Units)),} \hlkwc{data} \hlstd{= power)}
+\hlkwd{summary}\hlstd{(plm2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Cost ~ I(log(Units)), data = power)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4573.6 -1439.2   184.7  1758.1  3716.3 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)     -63993       9144  -6.998 4.49e-08 ***
+## I(log(Units))    16654       1438  11.578 2.41e-13 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2393 on 34 degrees of freedom
+## Multiple R-squared:  0.7977,	Adjusted R-squared:  0.7917 
+## F-statistic:   134 on 1 and 34 DF,  p-value: 2.409e-13
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(plm2}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{plm2}\hlopt{$}\hlstd{fitted.values)}
+\hlkwd{with}\hlstd{(power,} \hlkwd{plot}\hlstd{(Cost} \hlopt{~} \hlstd{Units,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{25000}\hlstd{,} \hlnum{50050}\hlstd{)))}
+\hlkwd{lines}\hlstd{(}\hlkwd{sort}\hlstd{(}\hlkwd{predict.lm}\hlstd{(plm2))} \hlopt{~} \hlkwd{sort}\hlstd{(power}\hlopt{$}\hlstd{Units),} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\hlkwd{AIC}\hlstd{(plm1)}
+\end{alltt}
+\begin{verbatim}
+## [1] 663.7554
+\end{verbatim}
+\begin{alltt}
+\hlkwd{AIC}\hlstd{(plm2)}
+\end{alltt}
+\begin{verbatim}
+## [1] 666.2827
+\end{verbatim}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-14-1} 
+\includegraphics[width=.7\textwidth]{figures/unnamed-chunk-14-2} 
+
+}
+
+
+\end{knitrout}
+Not a bad fit but not as good as quadratic. AIC also confirms quadratic model as better. 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{oldpar} \hlkwb{<-} \hlkwd{par}\hlstd{(}\hlkwc{mfrow} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{2}\hlstd{))}
+\hlkwd{plot}\hlstd{(plm1}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{plm1}\hlopt{$}\hlstd{fitted.values)}
+\hlkwd{plot}\hlstd{(plm2}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{plm2}\hlopt{$}\hlstd{fitted.values)}
+\hlkwd{par}\hlstd{(oldpar)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-15-1} 
+
+}
+
+
+\end{knitrout}
+Residual plots look similar, and residuals are fairly large. But note the response value range is in tens of thousands. Let
+us look at normality assumption.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{hist}\hlstd{(plm2}\hlopt{$}\hlstd{residuals,} \hlkwc{nclass} \hlstd{=} \hlnum{20}\hlstd{)}
+\hlstd{plm2.stdres} \hlkwb{=} \hlkwd{rstandard}\hlstd{(plm2)}
+\hlkwd{hist}\hlstd{(plm2.stdres)}
+\hlkwd{qqnorm}\hlstd{(plm2.stdres,} \hlkwc{ylab} \hlstd{=} \hlstr{"Standardized Residuals"}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Normal Scores"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Normal Probability plot"}\hlstd{)}
+\hlkwd{qqline}\hlstd{(plm2.stdres)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-16-1} 
+\includegraphics[width=.7\textwidth]{figures/unnamed-chunk-16-2} 
+\includegraphics[width=.7\textwidth]{figures/unnamed-chunk-16-3} 
+
+}
+
+
+\end{knitrout}
+The histogram of residuals does not look to be from a normal distribution. The normal probability plot is expected to be close
+to a straight line. In the given plot the departures from straight line are
+not severe, so there is not reason to doubt the normality assumption. The departures are at either end. At both ends the
+plot flattens off, indicating that the normal scores continue but the residuals stop. This indicates a ``cliff", that is,
+a short tail for the data.
+
+Can this model be improved? Let us try an extra term in the model.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{plm3} \hlkwb{<-} \hlkwd{lm}\hlstd{(Cost} \hlopt{~} \hlkwd{I}\hlstd{(}\hlkwd{log}\hlstd{(Units))} \hlopt{+} \hlkwd{I}\hlstd{(}\hlkwd{sqrt}\hlstd{(}\hlkwd{log}\hlstd{(Units))),} \hlkwc{data} \hlstd{= power)}
+\hlkwd{summary}\hlstd{(plm3)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Cost ~ I(log(Units)) + I(sqrt(log(Units))), data = power)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5241.7 -1143.2   329.8  1551.9  3471.1 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(>|t|)  
+## (Intercept)         -1117903     624539  -1.790   0.0826 .
+## I(log(Units))        -153338     100736  -1.522   0.1375  
+## I(sqrt(log(Units)))   846805     501759   1.688   0.1009  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 2330 on 33 degrees of freedom
+## Multiple R-squared:  0.8138,	Adjusted R-squared:  0.8025 
+## F-statistic: 72.09 on 2 and 33 DF,  p-value: 9.048e-13
+\end{verbatim}
+\begin{alltt}
+\hlkwd{plot}\hlstd{(plm3}\hlopt{$}\hlstd{residuals} \hlopt{~} \hlstd{plm3}\hlopt{$}\hlstd{fitted.values)}
+\hlkwd{with}\hlstd{(power,} \hlkwd{plot}\hlstd{(Cost} \hlopt{~} \hlstd{Units,} \hlkwc{ylim} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{25000}\hlstd{,} \hlnum{50050}\hlstd{)))}
+\hlkwd{lines}\hlstd{(}\hlkwd{sort}\hlstd{(}\hlkwd{predict.lm}\hlstd{(plm3))} \hlopt{~} \hlkwd{sort}\hlstd{(power}\hlopt{$}\hlstd{Units),} \hlkwc{col} \hlstd{=} \hlstr{"red"}\hlstd{)}
+\hlkwd{AIC}\hlstd{(plm1)}
+\end{alltt}
+\begin{verbatim}
+## [1] 663.7554
+\end{verbatim}
+\begin{alltt}
+\hlkwd{AIC}\hlstd{(plm2)}
+\end{alltt}
+\begin{verbatim}
+## [1] 666.2827
+\end{verbatim}
+\begin{alltt}
+\hlkwd{AIC}\hlstd{(plm3)}
+\end{alltt}
+\begin{verbatim}
+## [1] 665.3024
+\end{verbatim}
+\begin{alltt}
+\hlkwd{hist}\hlstd{(plm3}\hlopt{$}\hlstd{residuals,} \hlkwc{nclass} \hlstd{=} \hlnum{20}\hlstd{)}
+\hlstd{plm3.stdres} \hlkwb{=} \hlkwd{rstandard}\hlstd{(plm3)}
+\hlkwd{hist}\hlstd{(plm3.stdres)}
+\hlkwd{qqnorm}\hlstd{(plm3.stdres,} \hlkwc{ylab} \hlstd{=} \hlstr{"Standardized Residuals"}\hlstd{,} \hlkwc{xlab} \hlstd{=} \hlstr{"Normal Scores"}\hlstd{,} \hlkwc{main} \hlstd{=} \hlstr{"Normal Probability plot"}\hlstd{)}
+\hlkwd{qqline}\hlstd{(plm3.stdres)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=.7\textwidth]{figures/unnamed-chunk-17-1} 
+\includegraphics[width=.7\textwidth]{figures/unnamed-chunk-17-2} 
+\includegraphics[width=.7\textwidth]{figures/unnamed-chunk-17-3} 
+\includegraphics[width=.7\textwidth]{figures/unnamed-chunk-17-4} 
+\includegraphics[width=.7\textwidth]{figures/unnamed-chunk-17-5} 
+
+}
+
+
+\end{knitrout}
+Looks better than the previous model, but harder to interpret! I will be happy with just the log model.
+
+Any other ways of improving the model? Well, if you examine the plot of residuals against fitted values for model 2,
+you will see some evidence of heterogenous variance. That topic is this week's lecture material. We will cover this in the
+lab class.
+%%% eval: (local-set-key (quote [f4]) (quote Rnw-mode))
+%%% eval: (set 'compile-command "make Lab02_Notes.pdf")
+%%% End:
+
+\phead{SessionInfo}
+\label{sec:details}
+
+This document was prepared using the following settings:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.933, 0.933, 0.933}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{sessionInfo}\hlstd{()}
+\end{alltt}
+\begin{verbatim}
+## R version 4.2.1 (2022-06-23 ucrt)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 19044)
+## 
+## Matrix products: default
+## 
+## locale:
+## [1] LC_COLLATE=English_United States.utf8  LC_CTYPE=English_United States.utf8   
+## [3] LC_MONETARY=English_United States.utf8 LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.utf8    
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] knitr_1.39
+## 
+## loaded via a namespace (and not attached):
+##  [1] digest_0.6.29   formatR_1.12    magrittr_2.0.3  evaluate_0.15   highr_0.9      
+##  [6] rlang_1.0.4     stringi_1.7.6   cli_3.3.0       rstudioapi_0.13 rmarkdown_2.14 
+## [11] tools_4.2.1     stringr_1.4.0   xfun_0.31       yaml_2.3.5      fastmap_1.1.0  
+## [16] compiler_4.2.1  htmltools_0.5.3
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+%\bibliographystyle{dcunsp}
+%\bibliography{books}
+
+\end{document}
+
+%%% Local Variables:
+%%% eval: (local-set-key (quote [f4]) (quote Rnw-mode))
+%%% eval: (set 'compile-command "make Lab03_Notes.pdf")
+%%% End:

@@ -1,0 +1,269 @@
+\documentclass[11pt]{article}
+
+\usepackage{geometry}
+\geometry{a4paper,hmargin=17.0mm,vmargin={26.0mm,21.0mm},footskip=10mm}
+\usepackage{hyperref}
+%% \usepackage{language}
+%\usepackage{natbib}
+\usepackage{alltt}
+\usepackage{fancyhdr}
+\fancyhf{}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsbsy}
+
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\cov}{cov}
+\DeclareMathOperator{\cor}{cor}
+
+% coloring and subsectioning
+\definecolor{mycol}{rgb}{0.5, 0.3,0.3}
+\definecolor{mycolb}{rgb}{0.7, 0.3,0.3}
+\definecolor{mycolr}{rgb}{0.1, 0.1,1.0}
+\newcommand{\structure}[1]{{\color{mycolb}#1}}
+%\newcommand{\rcode}[1]{{\tt\color{red}#1}}
+\newcommand{\rcode}[1]{{\tt\color{red}#1}}
+\newcommand{\phead}[1]{{\bf{\color{mycol}#1}}}
+
+%% Now begin customising things. See the fancyhdr docs for more info.
+
+\chead{}
+\lhead[\sf \thepage]{\sf \leftmark}
+\rhead[\sf \leftmark]{\sf \thepage}
+\lfoot{}
+\cfoot{STAT2402: Analysis of Observations}
+\rfoot{\copyright~R. Nazim Khan~\the\year}
+\setlength{\headheight}{15pt}
+\pagestyle{fancy}
+
+\ifdefined\knitrout
+\renewenvironment{knitrout}{%
+  \begin{small}%
+  \setlength{\topsep}{3.0pt plus 1.0pt minus 1.0pt}%
+  \setlength{\partopsep}{1.0pt plus 1.0pt minus 1.0pt}%
+  \setlength{\parskip}{0pt}}{\end{small}}
+\else
+  \fi
+
+\usepackage{xspace}
+\def\R{\textsf{R}\xspace}
+
+\title{STAT2402: Analysis of Observations\\
+  Notes on Lecture~2}
+
+\author{R.Nazim~Khan\thanks{School of Mathematics and Statistics (M019), The
+  University of Western Australia, 35 Stirling Highway, Crawley WA
+  6009, Australia. E-mail: \href{mailto:nazim.khan@uwa.edu.au}
+  {\texttt{nazim.khan@uwa.edu.au}}}} 
+
+\date{2 August, 2022}
+\renewcommand{\abstractname}{Summary}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1pt minus 3pt}
+
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+This document contains some notes on the data analysis in Lecture 2.
+When reading the data into \R, I assume that the
+relevant files are stored in a subdirectory, called \texttt{data},
+of the working directory.  You may have to modify the commands
+with which the data is read in, but all other commands should work
+as shown, and they should produce the output shown.
+\end{abstract}
+
+
+%\tableofcontents
+
+<<setup, include=FALSE, cache=FALSE>>=
+  set.seed(123)
+opts_chunk$set(
+  dev="pdf",
+  fig.path="figures/",
+  fig.height=6,
+  fig.width=10,
+  out.width=".7\\textwidth",
+  fig.keep="high",
+  fig.show="hold",
+  fig.align="center",
+  tidy=TRUE
+)
+options(width = getOption('KNITR_WIDTH', 90L),
+        replace.assign=TRUE)
+thm <- knit_theme$get("acid")
+knit_theme$set(thm)
+@
+  
+\phead{Exercise 1: Analysis of MultipleReg data}
+<<echo = TRUE>>=
+##Set directory to data source
+setwd("C:/Users/rnazi/Documents/Teaching/STAT2402/STAT2402-2023/RMaterial")
+@
+\phead{Building a Linear model}
+In this exercise we will build a linear model.
+<<echo = T>>=
+mult <- read.table("../Data/mult.txt", header = T, sep = "\t")
+summary(mult)
+@
+It is good to look at a summary of the data you read in, to make sure it has been read in correctly. Data contains two
+variables only. Let us look at a plot
+of the data.
+<<echo = T>>=
+with(mult, plot(y ~ x, type = "l", main = "Plot of model building data"))
+@
+Plots indicates a slight curvature to the data. So how do we start the model building? Do we include an exponential term?
+Do we fit a model for $\log y$? Or shall we try a quadratic term? We start a simple linear model. Then by performing an
+analysis of residuals we select other terms and build up a model.
+<<echo = T>>=
+flm <- lm(y ~ x, data = mult)
+summary(flm)
+plot(flm$residuals ~ flm$fitted.values)
+@
+The residual plot indicates a quadratic term, so we include this.
+<<echo = T>>=
+flm1 <- update(flm, .~. + I(x^2))
+summary(flm1)
+plot(flm1$residuals ~ flm1$fitted.values)
+@
+Already looking good, with very small residuals. There is still a pattern, which resembles a square root function, so we
+include this in the model.
+<<echo = T>>=
+flm2 <- update(flm1, .~. + I(sqrt(x)))
+summary(flm2)
+plot(flm2$residuals ~ flm2$fitted.values)
+@
+Awesome! No patterns, {\it very} small residuals.
+<<echo = T>>=
+AIC(flm)
+AIC(flm1)
+AIC(flm2)
+@
+The final model has lowest AIC and residual SE. Final model is
+$$\hat y = 10 + 2.5x + 0.25 x^@ + 1.2 \sqrt{x}.$$
+This is the exact model used to generate the data. We plot the original data and the predicted values from the model.
+<<echo = T>>=
+with(mult, plot(y ~ x, type = "l"))
+lines(predict.lm(flm2) ~ mult$x, type = "p", col = "red")
+@
+
+The fit is exact. So model building proceeds by fitting simple models first and then adding terms based on residual analysis.
+
+\phead{Analysis of cost of power data}
+We analyse the data \texttt{power.txt} to build a model for cost of power based on the usage. The data contains the
+cost of power and the usage in units. First read in the data and
+plot it.
+<<echo = T>>=
+power <- read.table("../Data/power.txt", header = T, sep = "\t")
+summary(power)
+with(power, plot(Cost ~ Units))
+@
+The cost appears to increase with usage, but seems to flatten off as cost increases. We start by fitting a simple linear
+model.
+<<echo = T>>=
+plm <- lm(Cost ~ Units, data = power)
+summary(plm)
+@
+Some diagnostics now. First the plot of the fit.
+<<echo = T>>=
+with(power, plot(Cost ~ Units, ylim = c(25000, 50050)))
+lines(predict.lm(plm) ~ power$Units, col = "red")
+@
+Not a very good fit, especially at the ends. Examine the plot of residuals to see how to improve this model.
+<<echo = T>>=
+plot(plm$residuals ~ plm$fitted.values)
+@
+Nothing too clear here! But a closer look does indicate some curvature and a quadratic trend. Let us include a quadratic
+term in the model.
+<<echo = T>>=
+plm1 <- lm(Cost ~ Units + I(Units^2), data = power)
+summary(plm1)
+plot(plm1$residuals ~ plm1$fitted.values)
+with(power, plot(Cost ~ Units, ylim = c(25000, 50050)))
+lines(sort(predict.lm(plm1)) ~ sort(power$Units), col = "red")
+@
+Fit looks much better. Problem with the model is that the coefficient of the square term is negative, so the Cost will
+decrease as Units increases. This is not reasonable. Let us try a log model.
+<<echo = T>>=
+plm2 <- lm(Cost ~ I(log(Units)), data = power)
+summary(plm2)
+plot(plm2$residuals ~ plm2$fitted.values)
+with(power, plot(Cost ~ Units, ylim = c(25000, 50050)))
+lines(sort(predict.lm(plm2)) ~ sort(power$Units), col = "red")
+AIC(plm1)
+AIC(plm2)
+@
+Not a bad fit but not as good as quadratic. AIC also confirms quadratic model as better. 
+<<echo = T>>=
+oldpar <- par(mfrow=c(1,2))
+plot(plm1$residuals ~ plm1$fitted.values)
+plot(plm2$residuals ~ plm2$fitted.values)
+par(oldpar)
+@
+Residual plots look similar, and residuals are fairly large. But note the response value range is in tens of thousands. Let
+us look at normality assumption.
+<<echo = T>>=
+hist(plm2$residuals, nclass = 20)
+plm2.stdres = rstandard(plm2)
+hist(plm2.stdres)
+qqnorm(plm2.stdres, 
+ylab="Standardized Residuals", 
+xlab="Normal Scores", 
+main="Normal Probability plot") 
+qqline(plm2.stdres)
+@
+The histogram of residuals does not look to be from a normal distribution. The normal probability plot is expected to be close
+to a straight line. In the given plot the departures from straight line are
+not severe, so there is not reason to doubt the normality assumption. The departures are at either end. At both ends the
+plot flattens off, indicating that the normal scores continue but the residuals stop. This indicates a ``cliff", that is,
+a short tail for the data.
+
+Can this model be improved? Let us try an extra term in the model.
+<<echo = T>>=
+plm3 <- lm(Cost ~ I(log(Units)) + I(sqrt(log(Units))) , data = power)
+summary(plm3)
+plot(plm3$residuals ~ plm3$fitted.values)
+with(power, plot(Cost ~ Units, ylim = c(25000, 50050)))
+lines(sort(predict.lm(plm3)) ~ sort(power$Units), col = "red")
+AIC(plm1)
+AIC(plm2)
+AIC(plm3)
+hist(plm3$residuals, nclass = 20)
+plm3.stdres = rstandard(plm3)
+hist(plm3.stdres)
+qqnorm(plm3.stdres, 
+ylab="Standardized Residuals", 
+xlab="Normal Scores", 
+main="Normal Probability plot") 
+qqline(plm3.stdres)
+
+@
+Looks better than the previous model, but harder to interpret! I will be happy with just the log model.
+
+Any other ways of improving the model? Well, if you examine the plot of residuals against fitted values for model 2,
+you will see some evidence of heterogenous variance. That topic is this week's lecture material. We will cover this in the
+lab class.
+%%% eval: (local-set-key (quote [f4]) (quote Rnw-mode))
+%%% eval: (set 'compile-command "make Lab02_Notes.pdf")
+%%% End:
+
+\phead{SessionInfo}
+\label{sec:details}
+
+This document was prepared using the following settings:
+<<>>=
+sessionInfo()
+@ 
+
+%\bibliographystyle{dcunsp}
+%\bibliography{books}
+
+\end{document}
+
+%%% Local Variables:
+%%% eval: (local-set-key (quote [f4]) (quote Rnw-mode))
+%%% eval: (set 'compile-command "make Lab03_Notes.pdf")
+%%% End:
